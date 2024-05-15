@@ -1,9 +1,3 @@
-//! Run with
-//!
-//! ```not_rust
-//! cargo run -p example-hello-world
-//! ```
-
 use axum::{response::Html, routing::get, Router};
 
 #[tokio::main]
