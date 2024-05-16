@@ -1,9 +1,4 @@
-use axum::{
-    response::Html,
-    routing::post,
-    routing::{get, get_service},
-    Json, Router,
-};
+use axum::{response::Html, routing::get, routing::post, Json, Router};
 use serde::{Deserialize, Serialize};
 use tower_http::services::ServeDir;
 
@@ -31,7 +26,7 @@ async fn main() {
     let app = Router::new()
         .route("/", get(index_handler))
         .route("/calc", post(calc_handler))
-        .nest_service("/assets", get_service(ServeDir::new("assets")));
+        .nest_service("/static", ServeDir::new("./assets/"));
 
     // run it
     let listener = tokio::net::TcpListener::bind("127.0.0.1:4000")
