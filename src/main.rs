@@ -43,3 +43,18 @@ async fn index_handler() -> Html<&'static str> {
 async fn calc_handler(Json(my_input): Json<MyInputs>) -> Json<MyOutputs> {
     Json(do_calc(my_input))
 }
+
+/*
+TODO
+
+runtime
+
+-plots
+-select
+-checkboxes
+
+rust
+-async calc
+-process html function
+
+*/

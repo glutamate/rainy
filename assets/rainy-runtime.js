@@ -21,11 +21,21 @@ async function fetchRender() {
   });
   const data = await response.json();
   const evalCtx = { ...inputStore, ...data };
+  const evalExpr = (expr) => {
+    const f = new Function(Object.keys(evalCtx).join(","), `return ${expr}`);
+    return f(...Object.values(evalCtx));
+  };
+  document.querySelectorAll("[data-show-if]").forEach((el, i) => {
+    const expr = el.getAttribute("data-show-if");
+    const show_it = evalExpr(expr);
+    if (show_it) el.style.display = "";
+    else el.style.display = "none";
+  });
+
   document.querySelectorAll("[data-eval-expr]").forEach((el, i) => {
     const expr = el.getAttribute("data-eval-expr");
-    const f = new Function(Object.keys(evalCtx).join(","), `return ${expr}`);
-    const val = f(...Object.values(evalCtx));
-    el.textContent = val;
+
+    el.textContent = evalExpr(expr);
   });
 }
 
