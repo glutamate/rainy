@@ -15,7 +15,7 @@ struct MyOutputs {
     ys: Vec<f64>,
 }
 
-fn do_calc(my_input: MyInputs) -> MyOutputs {
+async fn do_calc(my_input: MyInputs) -> MyOutputs {
     let xs: Vec<f64> = (1..100).map(|x| (x as f64) * 0.05).collect();
     let ys = xs
         .clone()
@@ -51,7 +51,7 @@ async fn index_handler() -> Html<&'static str> {
 }
 
 async fn calc_handler(Json(my_input): Json<MyInputs>) -> Json<MyOutputs> {
-    Json(do_calc(my_input))
+    Json(do_calc(my_input).await)
 }
 
 /*
@@ -63,7 +63,6 @@ runtime
 -checkboxes
 
 rust
--async calc
 -process html function
 
 */
