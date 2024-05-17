@@ -8,6 +8,17 @@ document.querySelectorAll("[data-eval]").forEach((el, i) => {
     el.setAttribute("data-eval-expr", el.textContent);
   el.textContent = "";
 });
+
+let globalRainyContext = {};
+
+const rainyEvalExpr = (expr) => {
+  const f = new Function(
+    Object.keys(globalRainyContext).join(","),
+    `return ${expr}`
+  );
+  return f(...Object.values(globalRainyContext));
+};
+
 async function fetchRender() {
   document.querySelectorAll("input[name]").forEach((el, i) => {
     inputStore[el.name] = el.type === "number" ? +el.value : el.value;
@@ -20,14 +31,10 @@ async function fetchRender() {
     body: JSON.stringify(inputStore),
   });
   const data = await response.json();
-  const evalCtx = { ...inputStore, ...data };
-  const evalExpr = (expr) => {
-    const f = new Function(Object.keys(evalCtx).join(","), `return ${expr}`);
-    return f(...Object.values(evalCtx));
-  };
+  globalRainyContext = { ...inputStore, ...data };
   document.querySelectorAll("[data-show-if]").forEach((el, i) => {
     const expr = el.getAttribute("data-show-if");
-    const show_it = evalExpr(expr);
+    const show_it = rainyEvalExpr(expr);
     if (show_it) el.style.display = "";
     else el.style.display = "none";
   });
@@ -35,7 +42,7 @@ async function fetchRender() {
   document.querySelectorAll("[data-eval-expr]").forEach((el, i) => {
     const expr = el.getAttribute("data-eval-expr");
 
-    el.textContent = evalExpr(expr);
+    el.textContent = rainyEvalExpr(expr);
   });
 }
 
