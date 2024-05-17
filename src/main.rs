@@ -17,7 +17,11 @@ struct MyOutputs {
 
 fn do_calc(my_input: MyInputs) -> MyOutputs {
     let xs: Vec<f64> = (1..100).map(|x| (x as f64) * 0.05).collect();
-    let ys = xs.clone().into_iter().map(|x: f64| x.cos()).collect();
+    let ys = xs
+        .clone()
+        .into_iter()
+        .map(|x: f64| my_input.y * ((x * my_input.x).cos()))
+        .collect();
     MyOutputs {
         z: my_input.x + my_input.y,
         xs,
@@ -55,7 +59,6 @@ TODO
 
 runtime
 
--plots
 -select
 -checkboxes
 

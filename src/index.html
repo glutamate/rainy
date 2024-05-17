@@ -1,7 +1,20 @@
 <script src="/static/plotly.min.js"></script>
 <h1>hello from index.html</h1>
-<div><label>x</label><input name="x" type="number" value="5" /></div>
-<div><label>y</label><input name="y" type="number" value="4" /></div>
+<div>
+  <label>x</label><input name="x" type="number" value="1" step="0.01" />
+</div>
+<div>
+  <label>y</label><input name="y" type="number" value="1" step="0.01" />
+</div>
 <div><label>z</label><span data-eval>z</span></div>
 <div data-show-if="z>15">This value is too large!</div>
+<div id="myDiv"></div>
+<script type="text/rainy-loop-js">
+  var trace1 = {
+    x: globalRainyContext.xs,
+    y: globalRainyContext.ys,
+    type: 'scatter'
+  };
+  Plotly.newPlot('myDiv', [trace1]);
+</script>
 <script src="/static/rainy-runtime.js"></script>

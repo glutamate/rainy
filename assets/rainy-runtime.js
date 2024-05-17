@@ -32,6 +32,17 @@ async function fetchRender() {
   });
   const data = await response.json();
   globalRainyContext = { ...inputStore, ...data };
+
+  //render
+  document
+    .querySelectorAll('script[type="text/rainy-loop-js"]')
+    .forEach((el, i) => {
+      const f = new Function(
+        Object.keys(globalRainyContext).join(","),
+        el.textContent
+      );
+      f(...Object.values(globalRainyContext));
+    });
   document.querySelectorAll("[data-show-if]").forEach((el, i) => {
     const expr = el.getAttribute("data-show-if");
     const show_it = rainyEvalExpr(expr);
