@@ -1,6 +1,8 @@
 use axum::{response::Html, routing::get, routing::post, Json, Router};
+use components::{five, process_components};
 use serde::{Deserialize, Serialize};
 use tower_http::services::ServeDir;
+mod components;
 
 #[derive(Deserialize)]
 struct MyInputs {
@@ -23,7 +25,7 @@ async fn do_calc(my_input: MyInputs) -> MyOutputs {
         .map(|x: f64| my_input.y * ((x * my_input.x).cos()))
         .collect();
     MyOutputs {
-        z: my_input.x + my_input.y,
+        z: my_input.x + my_input.y + five(),
         xs,
         ys,
     }
@@ -47,7 +49,10 @@ async fn main() {
 }
 
 async fn index_handler() -> Html<&'static str> {
-    Html(include_str!("index.html"))
+    let s = include_str!("index.html");
+    process_components(s);
+
+    Html(s)
 }
 
 async fn calc_handler(Json(my_input): Json<MyInputs>) -> Json<MyOutputs> {
