@@ -23,7 +23,7 @@ fn elem_attr(e: &Element, attr_name: &str) -> String {
     let okv = e.attrs.iter().find(|(k, _)| k == attr_name);
     match okv {
         Some((_, v)) => v.to_string(),
-        None => panic!("attr not found"),
+        None => panic!("attr {} not found", attr_name),
     }
 }
 /*<div id="myDiv"></div>
