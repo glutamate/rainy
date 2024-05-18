@@ -7,7 +7,7 @@ pub fn five() -> f64 {
 
 struct Component {
     name: &'static str,
-    process: fn(Element) -> Vec<Node>,
+    process: fn(&Element) -> Vec<Node>,
 }
 
 const COMPONENTS: [Component; 1] = [Component {
@@ -15,7 +15,7 @@ const COMPONENTS: [Component; 1] = [Component {
     process: xyPlot,
 }];
 
-fn xyPlot(e: Element) -> Vec<Node> {
+fn xyPlot(_e: &Element) -> Vec<Node> {
     parse("<div>PLOT GOES HERE</div>").unwrap()
 }
 
@@ -32,16 +32,36 @@ fn xyPlot(e: Element) -> Vec<Node> {
 pub fn process_components(html: &str) -> String {
     let mut fragment = parse(html).unwrap();
     //process_components_html(&mut fragment);
-
+    //dbg!(fragment);
     for Component { name, process } in COMPONENTS {
         let selector = Selector::from(name);
-        fragment = fragment.replace_with(&selector, |el| {
+        for node in fragment.iter_mut() {
+            if let Node::Element(ref mut el) = node {
+                if selector.matches(el) {
+                    let nodes = process(el);
+                    if (nodes.len() == 1) {
+                        let newNode = nodes[0].clone();
+                        *node = newNode;
+                    } else {
+                        let newNode = Node::Element(Element {
+                            name: String::from("div"),
+                            attrs: vec![],
+                            children: nodes,
+                        });
+                        *node = newNode;
+                    }
+                } else {
+                    // el.replace_with(selector, f);
+                }
+            }
+        }
+        /*fragment = fragment.replace_with(&selector, |el| {
             let ns = process(el);
             ns[0]
-        });
+        });*/
         //dbg!(fragment.select(&selector));
     }
-
+    //fragment.html()
     fragment.html()
 }
 /*fn process_components_html(fragment: &mut Html) {
