@@ -33,11 +33,6 @@ async fn do_calc(my_input: MyInputs) -> MyOutputs {
 
 #[tokio::main]
 async fn main() {
-    let s = include_str!("index.html");
-    let sout = process_components(s);
-    println!("HTML output: ");
-    println!("{}", sout);
-
     // build our application with a route
 
     let app = Router::new()
@@ -53,11 +48,11 @@ async fn main() {
     axum::serve(listener, app).await.unwrap();
 }
 
-async fn index_handler() -> Html<&'static str> {
+async fn index_handler() -> Html<String> {
     let s = include_str!("index.html");
-    process_components(s);
+    //process_components(s);
 
-    Html(s)
+    Html(process_components(s))
 }
 
 async fn calc_handler(Json(my_input): Json<MyInputs>) -> Json<MyOutputs> {
@@ -73,6 +68,5 @@ runtime
 -checkboxes
 
 rust
--process html function
 
 */
