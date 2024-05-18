@@ -56,7 +56,11 @@ fn elem_attr(e: &Element, attr_name: &str) -> String {
 
 pub fn process_components(html: &str) -> String {
     let mut fragment = parse(html).unwrap();
+    process_component_nodes(&mut fragment);
+    fragment.html()
+}
 
+fn process_component_nodes(fragment: &mut Vec<Node>) {
     for component in COMPONENTS {
         fn visit(nodes: &mut Vec<Node>, comp: Component) {
             let Component { name, process } = comp;
@@ -64,7 +68,8 @@ pub fn process_components(html: &str) -> String {
             for node in nodes.iter_mut() {
                 if let Node::Element(ref mut el) = node {
                     if selector.matches(el) {
-                        let nodes = process(el);
+                        let mut nodes = process(el);
+                        process_component_nodes(&mut nodes);
                         if nodes.len() == 1 {
                             let new_node = nodes[0].clone();
                             *node = new_node;
@@ -83,8 +88,6 @@ pub fn process_components(html: &str) -> String {
                 }
             }
         }
-        visit(&mut fragment, component);
+        visit(fragment, component);
     }
-
-    fragment.html()
 }
