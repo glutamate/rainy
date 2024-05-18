@@ -4,7 +4,7 @@ use html_editor::{parse, Element, Node};
 pub fn five() -> f64 {
     5.3
 }
-
+#[derive(Clone, Copy)]
 struct Component {
     name: &'static str,
     process: fn(&Element) -> Vec<Node>,
@@ -33,28 +33,34 @@ pub fn process_components(html: &str) -> String {
     let mut fragment = parse(html).unwrap();
     //process_components_html(&mut fragment);
     //dbg!(fragment);
-    for Component { name, process } in COMPONENTS {
-        let selector = Selector::from(name);
-        for node in fragment.iter_mut() {
-            if let Node::Element(ref mut el) = node {
-                if selector.matches(el) {
-                    let nodes = process(el);
-                    if (nodes.len() == 1) {
-                        let newNode = nodes[0].clone();
-                        *node = newNode;
+    for component in COMPONENTS {
+        fn visit(nodes: &mut Vec<Node>, comp: Component) {
+            let Component { name, process } = comp;
+            let selector = Selector::from(name);
+            for node in nodes.iter_mut() {
+                if let Node::Element(ref mut el) = node {
+                    if selector.matches(el) {
+                        let nodes = process(el);
+                        if nodes.len() == 1 {
+                            let new_node = nodes[0].clone();
+                            *node = new_node;
+                        } else {
+                            let new_node = Node::Element(Element {
+                                name: String::from("div"),
+                                attrs: vec![],
+                                children: nodes,
+                            });
+                            *node = new_node;
+                        }
                     } else {
-                        let newNode = Node::Element(Element {
-                            name: String::from("div"),
-                            attrs: vec![],
-                            children: nodes,
-                        });
-                        *node = newNode;
+                        visit(&mut el.children, comp);
+                        // el.replace_with(selector, f);
                     }
-                } else {
-                    // el.replace_with(selector, f);
                 }
             }
         }
+        visit(&mut fragment, component);
+
         /*fragment = fragment.replace_with(&selector, |el| {
             let ns = process(el);
             ns[0]
