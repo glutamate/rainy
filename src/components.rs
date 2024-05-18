@@ -12,13 +12,20 @@ struct Component {
 
 const COMPONENTS: [Component; 1] = [Component {
     name: "xy-plot",
-    process: xyPlot,
+    process: |e: &Element| {
+        dbg!(e);
+        let id = elem_attr(e, "id");
+        parse(&format!("<div id=\"{}\">PLOT GOES HERE</div>", id)).unwrap()
+    },
 }];
 
-fn xyPlot(_e: &Element) -> Vec<Node> {
-    parse("<div>PLOT GOES HERE</div>").unwrap()
+fn elem_attr(e: &Element, attr_name: &str) -> String {
+    let okv = e.attrs.iter().find(|(k, _)| k == attr_name);
+    match okv {
+        Some((_, v)) => v.to_string(),
+        None => panic!("attr not found"),
+    }
 }
-
 /*<div id="myDiv"></div>
 <script type="text/rainy-loop-js">
   var trace1 = {
