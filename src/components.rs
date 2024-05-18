@@ -12,18 +12,48 @@ struct Component {
 
 const COMPONENTS: [Component; 1] = [Component {
     name: "xy-plot",
-    process: |e: &Element| {
-        dbg!(e);
-        let id = elem_attr(e, "id");
-        parse(&format!("<div id=\"{}\">PLOT GOES HERE</div>", id)).unwrap()
-    },
+    process: xy_process,
 }];
+
+fn xy_process(e: &Element) -> Vec<Node> {
+    //dbg!(e);
+    let id = elem_attr(e, "id");
+    let traces = e.query_all(&Selector::from("trace"));
+    //dbg!(traces);
+
+    let trace_defns: Vec<String> = traces
+        .iter()
+        .map(|tr_e| {
+            dbg!(tr_e);
+            format!(
+                "{{
+                    x: rainyEvalExpr(\"{}\"),
+                    y: rainyEvalExpr(\"{}\"),
+                    type: '{}'
+                  }}",
+                elem_attr(tr_e, "x"),
+                elem_attr(tr_e, "y"),
+                elem_attr(tr_e, "type")
+            )
+        })
+        .collect();
+    let all_traces_defs = trace_defns.join(",");
+
+    parse(&format!(
+        r#"<div id=\"{}\"></div>
+<script type=\"text/rainy-loop-js\">
+Plotly.newPlot('{}', [{}]);
+</script>"#,
+        id, id, all_traces_defs
+    ))
+    .unwrap()
+}
 
 fn elem_attr(e: &Element, attr_name: &str) -> String {
     let okv = e.attrs.iter().find(|(k, _)| k == attr_name);
     match okv {
         Some((_, v)) => v.to_string(),
-        None => panic!("attr {} not found", attr_name),
+        None => panic!("attr {} not found in <{}> element", attr_name, e.name),
     }
 }
 /*<div id="myDiv"></div>
