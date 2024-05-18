@@ -33,6 +33,11 @@ async fn do_calc(my_input: MyInputs) -> MyOutputs {
 
 #[tokio::main]
 async fn main() {
+    let s = include_str!("index.html");
+    let sout = process_components(s);
+    println!("HTML output: ");
+    println!("{}", sout);
+
     // build our application with a route
 
     let app = Router::new()

@@ -8,16 +8,8 @@
 </div>
 <div><label>z</label><span data-eval>z</span></div>
 <div data-show-if="z>15">This value is too large!</div>
-<xy-plot id="myDiv">
+<xy-plot id="myDiv1">
   <trace x="xs" y="ys" type="scatter"></trace>
 </xy-plot>
-<div id="myDiv"></div>
-<script type="text/rainy-loop-js">
-  var trace1 = {
-    x: globalRainyContext.xs,
-    y: globalRainyContext.ys,
-    type: 'scatter'
-  };
-  Plotly.newPlot('myDiv', [trace1]);
-</script>
+
 <script src="/static/rainy-runtime.js"></script>
