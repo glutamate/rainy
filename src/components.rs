@@ -1,19 +1,23 @@
 //use html5ever::tree_builder::TreeSink;
-use markup5ever::interface::tree_builder::TreeSink;
-use scraper::{element_ref::ElementRef, node::Element, Html};
+use html_editor::operation::*;
+use html_editor::{parse, Element, Node};
 pub fn five() -> f64 {
     5.3
 }
 
 struct Component {
     name: &'static str,
-    process: fn(ElementRef) -> Html,
+    process: fn(Element) -> Vec<Node>,
 }
 
 const COMPONENTS: [Component; 1] = [Component {
     name: "xy-plot",
-    process: (|e| Html::parse_fragment("<div>PLOT GOES HERE</div>")),
+    process: xyPlot,
 }];
+
+fn xyPlot(e: Element) -> Vec<Node> {
+    parse("<div>PLOT GOES HERE</div>").unwrap()
+}
 
 /*<div id="myDiv"></div>
 <script type="text/rainy-loop-js">
@@ -26,24 +30,16 @@ const COMPONENTS: [Component; 1] = [Component {
 </script> */
 
 pub fn process_components(html: &str) -> String {
-    let mut fragment = Html::parse_fragment(html);
+    let mut fragment = parse(html).unwrap();
     //process_components_html(&mut fragment);
 
     for Component { name, process } in COMPONENTS {
-        let selector = scraper::Selector::parse(name).unwrap();
-
+        let selector = Selector::from(name);
+        fragment = fragment.replace_with(&selector, |el| {
+            let ns = process(el);
+            ns[0]
+        });
         //dbg!(fragment.select(&selector));
-
-        for element in fragment.select(&selector) {
-            let id = element.id();
-            let h_substitute = process(element);
-            fragment.append_before_sibling(&id, h_substitute)
-            //dbg!(element.value());
-        }
-        let node_ids: Vec<_> = fragment.select(&selector).map(|x| x.id()).collect();
-        for id in node_ids {
-            fragment.remove_from_parent(&id);
-        }
     }
 
     fragment.html()
