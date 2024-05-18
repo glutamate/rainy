@@ -16,15 +16,12 @@ const COMPONENTS: [Component; 1] = [Component {
 }];
 
 fn xy_process(e: &Element) -> Vec<Node> {
-    //dbg!(e);
     let id = elem_attr(e, "id");
     let traces = e.query_all(&Selector::from("trace"));
-    //dbg!(traces);
 
     let trace_defns: Vec<String> = traces
         .iter()
         .map(|tr_e| {
-            dbg!(tr_e);
             format!(
                 "{{
                     x: rainyEvalExpr(\"{}\"),
@@ -56,20 +53,10 @@ fn elem_attr(e: &Element, attr_name: &str) -> String {
         None => panic!("attr {} not found in <{}> element", attr_name, e.name),
     }
 }
-/*<div id="myDiv"></div>
-<script type="text/rainy-loop-js">
-  var trace1 = {
-    x: globalRainyContext.xs,
-    y: globalRainyContext.ys,
-    type: 'scatter'
-  };
-  Plotly.newPlot('myDiv', [trace1]);
-</script> */
 
 pub fn process_components(html: &str) -> String {
     let mut fragment = parse(html).unwrap();
-    //process_components_html(&mut fragment);
-    //dbg!(fragment);
+
     for component in COMPONENTS {
         fn visit(nodes: &mut Vec<Node>, comp: Component) {
             let Component { name, process } = comp;
@@ -97,26 +84,7 @@ pub fn process_components(html: &str) -> String {
             }
         }
         visit(&mut fragment, component);
-
-        /*fragment = fragment.replace_with(&selector, |el| {
-            let ns = process(el);
-            ns[0]
-        });*/
-        //dbg!(fragment.select(&selector));
     }
-    //fragment.html()
+
     fragment.html()
 }
-/*fn process_components_html(fragment: &mut Html) {
-    for Component { name, process } in COMPONENTS {
-        let selector = scraper::Selector::parse(name).unwrap();
-
-        //dbg!(fragment.select(&selector));
-        for element in fragment.select(&selector) {
-            let id = element.id()
-            let h_substitute = process(element);
-            fragment.remove_from_parent(&id);
-            dbg!(element.value());
-        }
-    }
-}*/
