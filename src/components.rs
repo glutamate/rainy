@@ -40,8 +40,8 @@ fn xy_process(e: &Element) -> Vec<Node> {
     let all_traces_defs = trace_defns.join(",");
 
     parse(&format!(
-        r#"<div id=\"{}\"></div>
-<script type=\"text/rainy-loop-js\">
+        r#"<div id="{}"></div>
+<script type="text/rainy-loop-js">
 Plotly.newPlot('{}', [{}]);
 </script>"#,
         id, id, all_traces_defs
