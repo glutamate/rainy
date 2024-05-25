@@ -36,7 +36,7 @@ async fn do_calc(my_input: MyInputs) -> MyOutputs {
 #[tokio::main]
 async fn main() {
     // build our application with a route
-    let s1 = "<span><xy-plot></xy-plot></span>";
+    let s1 = "<span><xy-plot id=\"myDiv\"></xy-plot></span>";
     //let stemp = include_str!("xy-plot.html");
     let s2 = run_hht(
         s1,

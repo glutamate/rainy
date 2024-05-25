@@ -52,7 +52,16 @@ fn process_template(elem: &Element, name: &str, hb_body: &str) -> Vec<Node> {
     let mut handlebars = Handlebars::new();
     handlebars.register_template_string(name, hb_body).unwrap();
     let mut data = BTreeMap::new();
-    data.insert("FOO".to_string(), "bar".to_string());
+    for (k, v) in elem.attrs.iter() {
+        data.insert(k.to_string(), v.to_string());
+    }
     let result = handlebars.render(name, &data).unwrap();
     return parse(&result).unwrap();
+}
+fn elem_attr(e: &Element, attr_name: &str) -> String {
+    let okv = e.attrs.iter().find(|(k, _)| k == attr_name);
+    match okv {
+        Some((_, v)) => v.to_string(),
+        None => panic!("attr {} not found in <{}> element", attr_name, e.name),
+    }
 }
