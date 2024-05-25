@@ -3,6 +3,7 @@ use html_editor::operation::*;
 use html_editor::{parse, Element, Node};
 use serde_json::Value;
 use std::collections::BTreeMap;
+
 #[derive(Clone, Copy)]
 pub struct Template {
     pub name: &'static str,
@@ -70,14 +71,16 @@ fn process_template(elem: &Element, hb_body: &str) -> Vec<Node> {
         .flatten();
 
     for nm in child_tags {
-        let elems = elem.children.iter().filter(|node| {
-            if let Node::Element(el) = node {
-                *nm == el.name
-            } else {
-                false
-            }
-        });
-        let jvec = elems
+        let json_vec = elem
+            .children
+            .iter()
+            .filter(|node| {
+                if let Node::Element(el) = node {
+                    *nm == el.name
+                } else {
+                    false
+                }
+            })
             .map(|node| {
                 if let Node::Element(el) = node {
                     Some(attrs_to_obj(el.attrs.clone()))
@@ -88,12 +91,8 @@ fn process_template(elem: &Element, hb_body: &str) -> Vec<Node> {
             .flatten()
             .collect();
 
-        data.insert(nm, serde_json::Value::Array(jvec));
+        data.insert(nm, serde_json::Value::Array(json_vec));
     }
-    dbg!(data.clone());
-    //let children = elem.children.html();
-    //let child_key = "children".to_string();
-    //data.insert(&child_key, json!(children)); //&elem.children.html());
     let result = handlebars.render_template(hb_body, &data).unwrap();
     return parse(&result).unwrap();
 }
@@ -106,11 +105,3 @@ fn attrs_to_obj(attrs: Vec<(String, String)>) -> Value {
             .collect(),
     )
 }
-
-/*fn elem_attr(e: &Element, attr_name: &str) -> String {
-    let okv = e.attrs.iter().find(|(k, _)| k == attr_name);
-    match okv {
-        Some((_, v)) => v.to_string(),
-        None => panic!("attr {} not found in <{}> element", attr_name, e.name),
-    }
-}*/
