@@ -1,6 +1,7 @@
 use handlebars::*;
 use html_editor::operation::*;
 use html_editor::{parse, Element, Node};
+use serde_json::Value;
 use std::collections::BTreeMap;
 #[derive(Clone, Copy)]
 pub struct Template {
@@ -49,43 +50,61 @@ fn process_component_nodes(fragment: &mut Vec<Node>, templates: &Vec<Template>) 
 }
 
 fn process_template(elem: &Element, hb_body: &str) -> Vec<Node> {
-    let mut handlebars = Handlebars::new();
+    let handlebars = Handlebars::new();
     //handlebars.register_template_string(name, hb_body).unwrap();
-    handlebars.register_escape_fn(no_escape);
-    handlebars.register_helper(
-        "attr",
-        Box::new(
-            |h: &Helper,
-             _r: &Handlebars,
-             _: &Context,
-             _rc: &mut RenderContext,
-             out: &mut dyn Output|
-             -> HelperResult {
-                let attr_name = h.param(0).unwrap();
-                let attr_default = h.param(1).unwrap();
-                let okv = elem.attrs.iter().find(|(k, _)| k == attr_name.value());
-                match okv {
-                    Some((_, v)) => {
-                        out.write(v)?;
-                    }
-                    None => {
-                        out.write(attr_default.value().render().as_ref())?;
-                    }
-                }
-                Ok(())
-            },
-        ),
-    );
 
     let mut data = BTreeMap::new();
     for (k, v) in elem.attrs.iter() {
-        data.insert(k, v);
+        data.insert(k, serde_json::Value::String(v.clone()));
     }
-    let children = elem.children.html();
-    let child_key = "children".to_string();
-    data.insert(&child_key, &children); //&elem.children.html());
+    let child_tags = elem
+        .children
+        .iter()
+        .map(|c| {
+            if let Node::Element(el) = c {
+                Some(&(el.name))
+            } else {
+                None
+            }
+        })
+        .flatten();
+
+    for nm in child_tags {
+        let elems = elem.children.iter().filter(|node| {
+            if let Node::Element(el) = node {
+                *nm == el.name
+            } else {
+                false
+            }
+        });
+        let jvec = elems
+            .map(|node| {
+                if let Node::Element(el) = node {
+                    Some(attrs_to_obj(el.attrs.clone()))
+                } else {
+                    None
+                }
+            })
+            .flatten()
+            .collect();
+
+        data.insert(nm, serde_json::Value::Array(jvec));
+    }
+    dbg!(data.clone());
+    //let children = elem.children.html();
+    //let child_key = "children".to_string();
+    //data.insert(&child_key, json!(children)); //&elem.children.html());
     let result = handlebars.render_template(hb_body, &data).unwrap();
     return parse(&result).unwrap();
+}
+
+fn attrs_to_obj(attrs: Vec<(String, String)>) -> Value {
+    Value::Object(
+        attrs
+            .into_iter()
+            .map(|(k, v)| (k, serde_json::Value::String(v)))
+            .collect(),
+    )
 }
 
 /*fn elem_attr(e: &Element, attr_name: &str) -> String {

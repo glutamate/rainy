@@ -1,6 +1,12 @@
-<div id="{{ attr 'id' 'foo' }}"></div>
+<div id="{{ id }}"></div>
 <script>
-  Plotly.newPlot("{{ attr 'id' 'foo' }}", [
-    {{ children }}
+  Plotly.newPlot("{{ id }}", [
+    {{#each trace }}
+     {
+       x: rainyEvalExpr("{{x}}"),
+       y: rainyEvalExpr("{{y}}"),
+       type: "{{type}}"
+     },
+    {{/each}}
   ]);
 </script>

@@ -40,16 +40,10 @@ async fn main() {
     //let stemp = include_str!("xy-plot.html");
     let s2 = run_hbht(
         s1,
-        vec![
-            Template {
-                name: "trace",
-                body: include_str!("trace.html"),
-            },
-            Template {
-                name: "xy-plot",
-                body: include_str!("xy-plot.html"),
-            },
-        ],
+        vec![Template {
+            name: "xy-plot",
+            body: include_str!("xy-plot.html"),
+        }],
     );
     println!("{}", s2);
     let app = Router::new()
