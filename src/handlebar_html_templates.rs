@@ -8,7 +8,7 @@ pub struct Template {
     pub body: &'static str,
 }
 
-pub fn run_hht(html: &str, templates: Vec<Template>) -> String {
+pub fn run_hbht(html: &str, templates: Vec<Template>) -> String {
     let mut fragment = parse(html).unwrap();
     process_component_nodes(&mut fragment, &templates);
 

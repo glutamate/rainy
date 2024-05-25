@@ -1,6 +1,6 @@
 use axum::{response::Html, routing::get, routing::post, Json, Router};
 use components::{five, process_components};
-use handlebar_html_templates::{run_hht, Template};
+use handlebar_html_templates::{run_hbht, Template};
 use serde::{Deserialize, Serialize};
 use tower_http::services::ServeDir;
 mod components;
@@ -38,7 +38,7 @@ async fn main() {
     // build our application with a route
     let s1 = "<span><xy-plot id=\"myDiv\"></xy-plot></span>";
     //let stemp = include_str!("xy-plot.html");
-    let s2 = run_hht(
+    let s2 = run_hbht(
         s1,
         vec![Template {
             name: "xy-plot",
