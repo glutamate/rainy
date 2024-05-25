@@ -1,8 +1,10 @@
 use axum::{response::Html, routing::get, routing::post, Json, Router};
 use components::{five, process_components};
+use handlebar_html_templates::{run_hht, Template};
 use serde::{Deserialize, Serialize};
 use tower_http::services::ServeDir;
 mod components;
+mod handlebar_html_templates;
 
 #[derive(Deserialize)]
 struct MyInputs {
@@ -34,7 +36,16 @@ async fn do_calc(my_input: MyInputs) -> MyOutputs {
 #[tokio::main]
 async fn main() {
     // build our application with a route
-
+    let s1 = "<span><xy-plot></xy-plot></span>";
+    //let stemp = include_str!("xy-plot.html");
+    let s2 = run_hht(
+        s1,
+        vec![Template {
+            name: "xy-plot",
+            body: include_str!("xy-plot.html"),
+        }],
+    );
+    dbg!(s2);
     let app = Router::new()
         .route("/", get(index_handler))
         .route("/calc", post(calc_handler))
