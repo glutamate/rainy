@@ -1,4 +1,4 @@
-use handlebars::Handlebars;
+use handlebars::*;
 use html_editor::operation::*;
 use html_editor::{parse, Element, Node};
 use std::collections::BTreeMap;
@@ -23,7 +23,7 @@ fn process_component_nodes(fragment: &mut Vec<Node>, templates: &Vec<Template>) 
             for node in nodes.iter_mut() {
                 if let Node::Element(ref mut el) = node {
                     if selector.matches(el) {
-                        let mut nodes = process_template(el, name, body); // run handlebars here
+                        let mut nodes = process_template(el, body); // run handlebars here
                         process_component_nodes(&mut nodes, ts);
                         if nodes.len() == 1 {
                             let new_node = nodes[0].clone();
@@ -48,20 +48,48 @@ fn process_component_nodes(fragment: &mut Vec<Node>, templates: &Vec<Template>) 
     }
 }
 
-fn process_template(elem: &Element, name: &str, hb_body: &str) -> Vec<Node> {
+fn process_template(elem: &Element, hb_body: &str) -> Vec<Node> {
     let mut handlebars = Handlebars::new();
-    handlebars.register_template_string(name, hb_body).unwrap();
+    //handlebars.register_template_string(name, hb_body).unwrap();
+    handlebars.register_helper(
+        "attr",
+        Box::new(
+            |h: &Helper,
+             _r: &Handlebars,
+             _: &Context,
+             _rc: &mut RenderContext,
+             out: &mut dyn Output|
+             -> HelperResult {
+                let attr_name = h.param(0).unwrap();
+                let attr_default = h.param(1).unwrap();
+                dbg!(attr_name.value());
+                let okv = elem.attrs.iter().find(|(k, _)| k == attr_name.value());
+                dbg!(okv);
+                match okv {
+                    Some((_, v)) => {
+                        out.write(v)?;
+                    }
+                    None => {
+                        out.write(attr_default.value().render().as_ref())?;
+                    }
+                }
+                Ok(())
+            },
+        ),
+    );
+
     let mut data = BTreeMap::new();
     for (k, v) in elem.attrs.iter() {
-        data.insert(k.to_string(), v.to_string());
+        data.insert(k, v);
     }
-    let result = handlebars.render(name, &data).unwrap();
+    let result = handlebars.render_template(hb_body, &data).unwrap();
     return parse(&result).unwrap();
 }
-fn elem_attr(e: &Element, attr_name: &str) -> String {
+
+/*fn elem_attr(e: &Element, attr_name: &str) -> String {
     let okv = e.attrs.iter().find(|(k, _)| k == attr_name);
     match okv {
         Some((_, v)) => v.to_string(),
         None => panic!("attr {} not found in <{}> element", attr_name, e.name),
     }
-}
+}*/
