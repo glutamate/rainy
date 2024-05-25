@@ -36,16 +36,22 @@ async fn do_calc(my_input: MyInputs) -> MyOutputs {
 #[tokio::main]
 async fn main() {
     // build our application with a route
-    let s1 = "<span><xy-plot id=\"myDiv\"></xy-plot></span>";
+    let s1 = "<span><xy-plot id=\"myDiv\"><trace x=\"xs\" y=\"ys\" type=\"scatter\"></trace></xy-plot></span>";
     //let stemp = include_str!("xy-plot.html");
     let s2 = run_hbht(
         s1,
-        vec![Template {
-            name: "xy-plot",
-            body: include_str!("xy-plot.html"),
-        }],
+        vec![
+            Template {
+                name: "trace",
+                body: include_str!("trace.html"),
+            },
+            Template {
+                name: "xy-plot",
+                body: include_str!("xy-plot.html"),
+            },
+        ],
     );
-    dbg!(s2);
+    println!("{}", s2);
     let app = Router::new()
         .route("/", get(index_handler))
         .route("/calc", post(calc_handler))

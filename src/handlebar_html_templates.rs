@@ -51,6 +51,7 @@ fn process_component_nodes(fragment: &mut Vec<Node>, templates: &Vec<Template>) 
 fn process_template(elem: &Element, hb_body: &str) -> Vec<Node> {
     let mut handlebars = Handlebars::new();
     //handlebars.register_template_string(name, hb_body).unwrap();
+    handlebars.register_escape_fn(no_escape);
     handlebars.register_helper(
         "attr",
         Box::new(
@@ -62,9 +63,7 @@ fn process_template(elem: &Element, hb_body: &str) -> Vec<Node> {
              -> HelperResult {
                 let attr_name = h.param(0).unwrap();
                 let attr_default = h.param(1).unwrap();
-                dbg!(attr_name.value());
                 let okv = elem.attrs.iter().find(|(k, _)| k == attr_name.value());
-                dbg!(okv);
                 match okv {
                     Some((_, v)) => {
                         out.write(v)?;
@@ -82,6 +81,9 @@ fn process_template(elem: &Element, hb_body: &str) -> Vec<Node> {
     for (k, v) in elem.attrs.iter() {
         data.insert(k, v);
     }
+    let children = elem.children.html();
+    let child_key = "children".to_string();
+    data.insert(&child_key, &children); //&elem.children.html());
     let result = handlebars.render_template(hb_body, &data).unwrap();
     return parse(&result).unwrap();
 }

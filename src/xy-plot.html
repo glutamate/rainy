@@ -1,1 +1,6 @@
-<div id="{{ attr 'id' 'foo' }}">Hello world</div>
+<div id="{{ attr 'id' 'foo' }}"></div>
+<script>
+  Plotly.newPlot("{{ attr 'id' 'foo' }}", [
+    {{ children }}
+  ]);
+</script>
