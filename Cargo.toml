@@ -13,3 +13,4 @@ serde_json = "1.0.68"
 tower = { version = "0.4", features = ["util"] }
 tower-http = { version = "0.5.0", features = ["fs", "trace"] }
 html_editor = "0.7.0"
+handlebars = "5.1.2"
