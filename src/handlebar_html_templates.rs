@@ -122,4 +122,14 @@ mod tests {
         );
         assert_eq!(result, "<h1 id=\"myId\">Hello World!</h1>");
     }
+
+    #[test]
+    fn no_escape() {
+        let ts = vec![Template {
+            name: "card",
+            body: "<div class=\"card\">{{{contents}}}</div>",
+        }];
+        let result = run_hbht("<card contents=\"<h1>Hello World!</h1>\"></card>", ts);
+        assert_eq!(result, "<div class=\"card\"><h1>Hello World!</h1></div>");
+    }
 }
