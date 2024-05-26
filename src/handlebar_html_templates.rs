@@ -58,6 +58,10 @@ fn process_template(elem: &Element, hb_body: &str) -> Vec<Node> {
     for (k, v) in elem.attrs.iter() {
         data.insert(k, serde_json::Value::String(v.clone()));
     }
+    let body_nm = "innerHTML".to_string();
+    let body_str = elem.children.html();
+    data.insert(&body_nm, serde_json::Value::String(body_str));
+
     let child_tags = elem
         .children
         .iter()
@@ -124,12 +128,12 @@ mod tests {
     }
 
     #[test]
-    fn no_escape() {
+    fn inner_html() {
         let ts = vec![Template {
             name: "card",
-            body: "<div class=\"card\">{{{contents}}}</div>",
+            body: "<div class=\"card\">{{{innerHTML}}}</div>",
         }];
-        let result = run_hbht("<card contents=\"<h1>Hello World!</h1>\"></card>", ts);
+        let result = run_hbht("<card><h1>Hello World!</h1></card>", ts);
         assert_eq!(result, "<div class=\"card\"><h1>Hello World!</h1></div>");
     }
 }
