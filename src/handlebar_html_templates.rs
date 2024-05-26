@@ -1,4 +1,4 @@
-use handlebars::*;
+use handlebars::Handlebars;
 use html_editor::operation::*;
 use html_editor::{parse, Element, Node};
 use serde_json::Value;
@@ -104,4 +104,22 @@ fn attrs_to_obj(attrs: Vec<(String, String)>) -> Value {
             .map(|(k, v)| (k, serde_json::Value::String(v)))
             .collect(),
     )
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn it_works() {
+        let ts = vec![Template {
+            name: "headline",
+            body: "<h1 id=\"{{id}}\">{{text}}</h1>",
+        }];
+        let result = run_hbht(
+            "<headline id=\"myId\" text=\"Hello World!\"></headline>",
+            ts,
+        );
+        assert_eq!(result, "<h1 id=\"myId\">Hello World!</h1>");
+    }
 }
