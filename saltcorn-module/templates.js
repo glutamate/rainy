@@ -13,32 +13,35 @@ module.exports = async (fragment) => {
   }
   const $ = cheerio.load(fragment);
 
-  let changed = false;
-  for (const [name, body] of Object.entries(templates)) {
-    const matches = $(name);
-    matches.each(function () {
-      changed = true;
-      const $this = $(this);
-      const context = {};
-      for (const { name, value } of this.attributes) {
-        context[name] = value;
-      }
-      context.body = $this.html();
-      for (const child of this.children) {
-        console.log("chcon", child.constructor.name);
-        if (child.constructor.name === "Element") {
-          if (!context[child.name]) context[child.name] = [];
-          const pushval = {};
-          for (const { name, value } of child.attributes) {
-            pushval[name] = value;
-          }
-          context[child.name].push(pushval);
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (const [name, body] of Object.entries(templates)) {
+      const matches = $(name);
+      matches.each(function () {
+        changed = true;
+        const $this = $(this);
+        const context = {};
+        for (const { name, value } of this.attributes) {
+          context[name] = value;
         }
-      }
-      console.log("ctx", context);
-      const template = Handlebars.compile(body);
-      $(this).replaceWith($(template(context)));
-    });
+        context.body = $this.html();
+        for (const child of this.children) {
+          console.log("chcon", child.constructor.name);
+          if (child.constructor.name === "Element") {
+            if (!context[child.name]) context[child.name] = [];
+            const pushval = {};
+            for (const { name, value } of child.attributes) {
+              pushval[name] = value;
+            }
+            context[child.name].push(pushval);
+          }
+        }
+        console.log("ctx", context);
+        const template = Handlebars.compile(body);
+        $(this).replaceWith($(template(context)));
+      });
+    }
   }
   return $.html();
 };
