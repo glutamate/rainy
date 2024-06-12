@@ -5,6 +5,7 @@ const Table = require("@saltcorn/data/models/table");
 const FieldRepeat = require("@saltcorn/data/models/fieldrepeat");
 const Workflow = require("@saltcorn/data/models/workflow");
 const proc_html = require("./templates.js");
+const { pre, code } = require("@saltcorn/markup/tags");
 
 const get_state_fields = () => [];
 
@@ -60,12 +61,15 @@ const configuration_workflow = () =>
 const run = async (
   table_id,
   viewname,
-  { sql, output_type, state_parameters, html_code },
+  { python_file, layout_file },
   state,
   { req }
 ) => {
-  const foo = proc_html("");
-  return "dashbaord goes here";
+  const layout = await File.findOne(layout_file);
+  console.log(layout);
+  const foo = await proc_html(await layout.get_contents());
+  console.log(foo);
+  return showHtml(foo);
 };
 
 module.exports = {
@@ -82,3 +86,15 @@ module.exports = {
     },
   ],
 };
+
+const showHtml = (v) =>
+  pre(
+    code(
+      (v || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;")
+    )
+  );
