@@ -4,6 +4,7 @@ const File = require("@saltcorn/data/models/file");
 const Table = require("@saltcorn/data/models/table");
 const FieldRepeat = require("@saltcorn/data/models/fieldrepeat");
 const Workflow = require("@saltcorn/data/models/workflow");
+const proc_html = require("./templates.js");
 
 const get_state_fields = () => [];
 
@@ -63,6 +64,7 @@ const run = async (
   state,
   { req }
 ) => {
+  const foo = proc_html("");
   return "dashbaord goes here";
 };
 
