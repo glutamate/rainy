@@ -28,7 +28,11 @@ module.exports = async (fragment) => {
         console.log("chcon", child.constructor.name);
         if (child.constructor.name === "Element") {
           if (!context[child.name]) context[child.name] = [];
-          context[child.name].push(child);
+          const pushval = {};
+          for (const { name, value } of child.attributes) {
+            pushval[name] = value;
+          }
+          context[child.name].push(pushval);
         }
       }
       console.log("ctx", context);
