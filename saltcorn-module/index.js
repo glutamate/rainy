@@ -1,3 +1,4 @@
+const db = require("@saltcorn/data/db");
 const Form = require("@saltcorn/data/models/form");
 const Field = require("@saltcorn/data/models/field");
 const File = require("@saltcorn/data/models/file");
@@ -6,6 +7,9 @@ const FieldRepeat = require("@saltcorn/data/models/fieldrepeat");
 const Workflow = require("@saltcorn/data/models/workflow");
 const proc_html = require("./templates.js");
 const { pre, code, div, script, domReady } = require("@saltcorn/markup/tags");
+
+const exec = require("child_process").exec;
+const path = require("path");
 
 const get_state_fields = () => [];
 
@@ -73,9 +77,42 @@ const run = async (
   );
 };
 
-const update = async (table_id, viewname, config, body, { req }) => {
+const runCmd = (cmd, options) => {
+  return new Promise((resolve, reject) => {
+    const cp = exec(
+      cmd,
+      options?.cwd ? { cwd: options.cwd } : {},
+      (error, stdout, stderr) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve({
+            stdout,
+            stderr,
+          });
+        }
+      }
+    );
+    if (options?.stdin) {
+      cp.stdin.write(options.stdin);
+      cp.stdin.end();
+    }
+  });
+};
+
+const update = async (table_id, viewname, { python_file }, body, { req }) => {
   console.log("update body", body);
-  return { json: { foo: 1 } };
+  const pyfile = await File.findOne(python_file);
+  const cwd = path.dirname(pyfile.location);
+  const name = path.basename(pyfile.location);
+
+  //let options = { stdio: "pipe", cwd: __dirname };
+  const { stdout, stderr } = await runCmd(`python3 ${name}`, {
+    cwd,
+    stdin: JSON.stringify(body),
+  });
+  console.log({ stdout, stderr, cwd });
+  return { json: JSON.parse(stdout) };
 };
 
 const headers = [
