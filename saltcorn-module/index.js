@@ -40,7 +40,12 @@ const configuration_workflow = () =>
                 required: true,
                 attributes: { options: pyFiles.map((f) => f.path_to_serve) },
               },
-
+              {
+                name: "python_bin",
+                label: "Python executable",
+                sublabel: "If blank, defaults to python3",
+                type: "String",
+              },
               {
                 name: "layout_type",
                 label: "Layout type",
@@ -100,17 +105,26 @@ const runCmd = (cmd, options) => {
   });
 };
 
-const update = async (table_id, viewname, { python_file }, body, { req }) => {
+const update = async (
+  table_id,
+  viewname,
+  { python_file, python_bin },
+  body,
+  { req }
+) => {
   console.log("update body", body);
   const pyfile = await File.findOne(python_file);
   const cwd = path.dirname(pyfile.location);
   const name = path.basename(pyfile.location);
 
   //let options = { stdio: "pipe", cwd: __dirname };
-  const { stdout, stderr } = await runCmd(`python3 ${name}`, {
-    cwd,
-    stdin: JSON.stringify(body),
-  });
+  const { stdout, stderr } = await runCmd(
+    `${python_bin || "python3"} ${name}`,
+    {
+      cwd,
+      stdin: JSON.stringify(body),
+    }
+  );
   console.log({ stdout, stderr, cwd });
   return { json: JSON.parse(stdout) };
 };
