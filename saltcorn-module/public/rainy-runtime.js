@@ -27,7 +27,6 @@ async function fetchRender() {
   const viewname = document
     .querySelectorAll("div.rainy-dashboard")[0]
     .getAttribute("data-viewname");
-  console.log("vn", viewname);
   document
     .querySelectorAll("div.rainy-dashboard input[name]")
     .forEach((el, i) => {
