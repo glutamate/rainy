@@ -27,7 +27,6 @@ module.exports = async (fragment) => {
         }
         context.body = $this.html();
         for (const child of this.children) {
-          console.log("chcon", child.constructor.name);
           if (child.constructor.name === "Element") {
             if (!context[child.name]) context[child.name] = [];
             const pushval = {};
@@ -37,7 +36,6 @@ module.exports = async (fragment) => {
             context[child.name].push(pushval);
           }
         }
-        console.log("ctx", context);
         const template = Handlebars.compile(body);
         $(this).replaceWith($(template(context)));
       });

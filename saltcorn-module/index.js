@@ -5,7 +5,7 @@ const Table = require("@saltcorn/data/models/table");
 const FieldRepeat = require("@saltcorn/data/models/fieldrepeat");
 const Workflow = require("@saltcorn/data/models/workflow");
 const proc_html = require("./templates.js");
-const { pre, code } = require("@saltcorn/markup/tags");
+const { pre, code, div, script, domReady } = require("@saltcorn/markup/tags");
 
 const get_state_fields = () => [];
 
@@ -66,15 +66,30 @@ const run = async (
   { req }
 ) => {
   const layout = await File.findOne(layout_file);
-  console.log(layout);
   const foo = await proc_html(await layout.get_contents());
-  console.log(foo);
-  return showHtml(foo);
+  return (
+    div({ class: "rainy-dashboard", "data-viewname": viewname }, foo) +
+    script(domReady(`fetchRender()`))
+  );
 };
+
+const update = async (table_id, viewname, config, body, { req }) => {
+  console.log("update body", body);
+  return { json: { foo: 1 } };
+};
+
+const headers = [
+  {
+    script: `/plugins/public/rainy@${
+      require("./package.json").version
+    }/rainy-runtime.js`,
+  },
+];
 
 module.exports = {
   sc_plugin_api_version: 1,
   plugin_name: "rainy",
+  headers,
   viewtemplates: [
     {
       name: "Rainy Dashboard",
@@ -83,6 +98,7 @@ module.exports = {
       get_state_fields,
       configuration_workflow,
       run,
+      routes: { update },
     },
   ],
 };
