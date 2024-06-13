@@ -1,0 +1,25 @@
+<table class="table" id="{{ id }}">
+  <thead>
+    <tr></tr>
+  </thead>
+  <tbody></tbody>
+</table>
+<script type="text/rainy-loop-js">
+  const ddf = rainyEvalExpr("{{data}}")
+  let len = 0
+  $(`#{{id}} thead tr`).html("")
+  $(`#{{id}} tbody`).html("")
+  Object.keys(ddf).forEach(k=>{
+    $(`#{{id}} thead tr`).append(`<th>${k}</th>`)
+    len = Math.max(len, ddf[k].length)
+  })
+  for (let ix = 0; ix < len; ix++) {
+    const tr = Object.keys(ddf).map(k=>`<td>${ddf[k][ix]}</td>`).join("")
+    $(`#{{id}} tbody`).append(`<tr>${tr}</tr>`)
+  }
+  console.log(len)
+</script>
+
+<script>
+  document.querySelector;
+</script>
