@@ -17,7 +17,7 @@ const configuration_workflow = () =>
   new Workflow({
     steps: [
       {
-        name: "dashboard",
+        name: "Dashboard",
         form: async (context) => {
           const allFiles = await File.find();
           const pyFiles = allFiles.filter((f) => f.location.endsWith(".py"));
@@ -64,6 +64,59 @@ const configuration_workflow = () =>
           });
         },
       },
+      {
+        name: "Persistence",
+        form: async (context) => {
+          const tables = await Table.find();
+          const jsonFieldOptions = {};
+          const stringFieldOptions = {};
+          for (const table of tables) {
+            jsonFieldOptions[table.name] = table.fields
+              .filter((f) => f.type?.name === "JSON")
+              .map((f) => f.name);
+            stringFieldOptions[table.name] = table.fields
+              .filter((f) => f.type?.name === "String")
+              .map((f) => f.name);
+          }
+          return new Form({
+            fields: [
+              {
+                name: "persistence_table",
+                label: "Persistence table",
+                type: "String",
+                attributes: { options: tables.map((t) => t.name) },
+              },
+              {
+                name: "inputs_field",
+                label: "Inputs field",
+                type: "String",
+                attributes: {
+                  calcOptions: ["persistence_table", jsonFieldOptions],
+                },
+                showIf: { persistence_table: tables.map((t) => t.name) },
+              },
+              {
+                name: "outputs_field",
+                label: "Outputs field",
+                type: "String",
+                attributes: {
+                  calcOptions: ["persistence_table", jsonFieldOptions],
+                },
+                showIf: { persistence_table: tables.map((t) => t.name) },
+              },
+              {
+                name: "name_field",
+                label: "Name field",
+                type: "String",
+                attributes: {
+                  calcOptions: ["persistence_table", stringFieldOptions],
+                },
+                showIf: { persistence_table: tables.map((t) => t.name) },
+              },
+            ],
+          });
+        },
+      },
     ],
   });
 
@@ -72,13 +125,13 @@ const run = async (
   viewname,
   { python_file, layout_file },
   state,
-  { req }
+  extra
 ) => {
   const layout = await File.findOne(layout_file);
   const foo = await proc_html(await layout.get_contents());
   return (
     div({ class: "rainy-dashboard", "data-viewname": viewname }, foo) +
-    script(domReady(`fetchRender()`))
+    (extra.isPreview ? "" : script(domReady(`fetchRender()`)))
   );
 };
 
