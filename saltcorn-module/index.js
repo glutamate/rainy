@@ -123,13 +123,31 @@ const configuration_workflow = () =>
 const run = async (
   table_id,
   viewname,
-  { python_file, layout_file },
+  {
+    python_file,
+    layout_file,
+    persistence_table,
+    inputs_field,
+    outputs_field,
+    name_field,
+  },
   state,
   extra
 ) => {
   const layout = await File.findOne(layout_file);
   const foo = await proc_html(await layout.get_contents());
+  let persistData = [];
+  if (persistence_table) {
+    const table = Table.findOne(persistence_table);
+    const rows = await table.getRows({});
+    persistData = rows.map((r) => ({
+      inputs: r[inputs_field],
+      name: r[name_field],
+      id: r[table.pk_name],
+    }));
+  }
   return (
+    script(`const rainyPersistData = ${JSON.stringify(persistData)}`) +
     div({ class: "rainy-dashboard", "data-viewname": viewname }, foo) +
     (extra.isPreview ? "" : script(domReady(`fetchRender()`)))
   );
@@ -182,6 +200,25 @@ const update = async (
   return { json: JSON.parse(stdout) };
 };
 
+const save_persist = async (
+  table_id,
+  viewname,
+  { persistence_table, inputs_field, outputs_field, name_field },
+  body,
+  { req }
+) => {
+  if (persistence_table) {
+    const table = Table.findOne(persistence_table);
+    const row = {};
+    await table.insertRow({
+      [inputs_field]: body.inputs,
+      [outputs_field]: body.outputs,
+      [name_field]: body.name,
+    });
+  }
+  return { json: { success: "ok" } };
+};
+
 const headers = [
   {
     script: `/plugins/public/rainy@${
@@ -202,7 +239,7 @@ module.exports = {
       get_state_fields,
       configuration_workflow,
       run,
-      routes: { update },
+      routes: { update, save_persist },
     },
   ],
 };

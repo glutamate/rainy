@@ -1,0 +1,55 @@
+<div id="preset-select" class="dropdown">
+  <button
+    class="btn btn-secondary dropdown-toggle"
+    type="button"
+    data-bs-toggle="dropdown"
+    aria-expanded="false"
+  >
+    Saved inputs
+  </button>
+  <ul class="dropdown-menu">
+    <li>
+      <a class="dropdown-item" href="javascript:newRainyPersist()"
+        >Save these inputs</a
+      >
+    </li>
+  </ul>
+</div>
+<script>
+  const ul = document.querySelector("#preset-select ul");
+  (rainyPersistData || []).forEach((row) => {
+    const li = document.createElement("li");
+    const a = document.createElement("a");
+    a.appendChild(document.createTextNode(row.name));
+    li.setAttribute("class", "dropdown-item");
+    a.setAttribute(
+      "href",
+      `javascript:setRainyPersist(${JSON.stringify(row.id)})`
+    );
+    li.appendChild(a);
+    ul.appendChild(li);
+  });
+  function newRainyPersist() {
+    const name = window.prompt("Name of these inputs");
+    if (!name) return;
+    const viewname = document
+      .querySelectorAll("div.rainy-dashboard")[0]
+      .getAttribute("data-viewname");
+    view_post(viewname, "save_persist", {
+      name,
+      inputs: inputStore,
+      outputs: rainyOutputs,
+    });
+  }
+  function setRainyPersist(id) {
+    const row = rainyPersistData.find((r) => r.id == id);
+    document
+      .querySelectorAll("div.rainy-dashboard input[name]")
+      .forEach((el, i) => {
+        if (typeof row.inputs[el.name] !== "undefined") {
+          el.value = row.inputs[el.name];
+        }
+      });
+    fetchRender();
+  }
+</script>

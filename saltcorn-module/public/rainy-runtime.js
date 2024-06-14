@@ -1,6 +1,7 @@
 /* eslint-env browser */
 /* globals notifyAlert, $, view_post */
 const inputStore = {};
+let rainyOutputs;
 
 document
   .querySelectorAll(
@@ -50,6 +51,7 @@ async function fetchRender() {
   console.log("inputs", inputStore);
   view_post(viewname, "update", inputStore, (data) => {
     globalRainyContext = { ...inputStore, ...data };
+    rainyOutputs = data;
     //render
     document
       .querySelectorAll('script[type="text/rainy-loop-js"]')
