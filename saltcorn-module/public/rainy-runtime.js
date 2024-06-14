@@ -24,7 +24,9 @@ const rainyEvalExpr = (expr) => {
   );
   return f(...Object.values(globalRainyContext));
 };
-
+document.querySelectorAll(".rainy-loading-indicator").forEach((el, i) => {
+  el.style.display = "none";
+});
 async function fetchRender() {
   const viewname = document
     .querySelectorAll("div.rainy-dashboard")[0]
@@ -39,6 +41,12 @@ async function fetchRender() {
     .forEach((el, i) => {
       inputStore[el.name] = el.options[el.selectedIndex].value;
     });
+  document.querySelectorAll(".rainy-loading-indicator").forEach((el, i) => {
+    el.style.display = "";
+  });
+  document.querySelectorAll(".rainy-hide-loading").forEach((el, i) => {
+    el.style.display = "none";
+  });
   console.log("inputs", inputStore);
   view_post(viewname, "update", inputStore, (data) => {
     globalRainyContext = { ...inputStore, ...data };
@@ -63,6 +71,12 @@ async function fetchRender() {
       const expr = el.getAttribute("data-eval-expr");
 
       el.textContent = rainyEvalExpr(expr);
+    });
+    document.querySelectorAll(".rainy-loading-indicator").forEach((el, i) => {
+      el.style.display = "none";
+    });
+    document.querySelectorAll(".rainy-hide-loading").forEach((el, i) => {
+      el.style.display = "";
     });
   });
 }
