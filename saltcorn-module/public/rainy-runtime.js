@@ -3,7 +3,9 @@
 const inputStore = {};
 
 document
-  .querySelectorAll("div.rainy-dashboard input[name]")
+  .querySelectorAll(
+    "div.rainy-dashboard input[name], div.rainy-dashboard select[name]"
+  )
   .forEach((el, i) => {
     el.addEventListener("change", fetchRender);
   });
@@ -32,6 +34,12 @@ async function fetchRender() {
     .forEach((el, i) => {
       inputStore[el.name] = el.type === "number" ? +el.value : el.value;
     });
+  document
+    .querySelectorAll("div.rainy-dashboard select[name]")
+    .forEach((el, i) => {
+      inputStore[el.name] = el.options[el.selectedIndex].value;
+    });
+  console.log("inputs", inputStore);
   view_post(viewname, "update", inputStore, (data) => {
     globalRainyContext = { ...inputStore, ...data };
     //render
