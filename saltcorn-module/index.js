@@ -183,7 +183,6 @@ const update = async (
   body,
   { req }
 ) => {
-  console.log("update body", body);
   const pyfile = await File.findOne(python_file);
   const cwd = path.dirname(pyfile.location);
   const name = path.basename(pyfile.location);
@@ -196,7 +195,6 @@ const update = async (
       stdin: JSON.stringify(body),
     }
   );
-  console.log({ stdout, stderr, cwd });
   return { json: JSON.parse(stdout) };
 };
 
@@ -215,7 +213,7 @@ const save_persist = async (
       [outputs_field]: body.outputs,
       [name_field]: body.name,
     });
-  }
+  } else throw new Error("Persistence not configured");
   return { json: { success: "ok" } };
 };
 

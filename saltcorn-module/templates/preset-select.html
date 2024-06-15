@@ -1,11 +1,11 @@
 <div id="preset-select" class="dropdown">
   <button
-    class="btn btn-secondary dropdown-toggle"
+    class="btn {{#if btn-class}} {{ btn-class }} {{else}} btn-secondary {{/if}} dropdown-toggle"
     type="button"
     data-bs-toggle="dropdown"
     aria-expanded="false"
   >
-    Saved inputs
+    {{#if label}} {{label }} {{else}} Saved inputs {{/if}}
   </button>
   <ul class="dropdown-menu">
     <li>
