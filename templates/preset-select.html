@@ -44,7 +44,9 @@
   function setRainyPersist(id) {
     const row = rainyPersistData.find((r) => r.id == id);
     document
-      .querySelectorAll("div.rainy-dashboard input[name]")
+      .querySelectorAll(
+        "div.rainy-dashboard input[name], div.rainy-dashboard select[name]"
+      )
       .forEach((el, i) => {
         if (typeof row.inputs[el.name] !== "undefined") {
           el.value = row.inputs[el.name];
