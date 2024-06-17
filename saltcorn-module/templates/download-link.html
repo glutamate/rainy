@@ -1,0 +1,30 @@
+<a
+  href="javascript:rainy_do_download('{{data}}', '{{format}}')"
+  {{#if class}} class="{{class}}" {{/if}}
+>
+  <i class="fas fa-download me-1">{{#if label}} {{label }} {{/if}}</i>
+</a>
+<script>
+  function rainy_do_download(dataStr, format) {
+  const ddf = rainyEvalExpr(dataStr);
+
+  if(format==="csv") {
+    const lines = []
+    lines.push(Object.keys(ddf).join(","))
+    for (let ix = 0; ix < ddf[Object.keys(ddf)[0]].length; ix++) {
+      lines.push(Object.keys(ddf).map(k=>ddf[k][ix]).join(","))      
+    }
+    const blob = new Blob([lines.join("\n")], { type: 'text/csv' });
+    
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    
+    a.href = url;
+    a.download = 'download.csv';
+    
+    a.click();
+  }
+
+  }
+</script>
