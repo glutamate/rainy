@@ -10,12 +10,23 @@
        {{#if yaxis}} yaxis: "{{yaxis}}", {{/if}}
      },
     {{/each}}
+    {{#each traces }}
+     ...rainyEvalExpr("{{ys}}").map(y=>({
+       x: rainyEvalExpr("{{x}}"),
+       y,
+       {{#if type}} type: "{{type}}", {{/if}}
+       {{#if name}} name: "{{name}}", {{/if}}
+       {{#if yaxis}} yaxis: "{{yaxis}}", {{/if}}
+      }))
+
+    {{/each}}
   ], {
     {{#if title}} title: "{{title}}", {{/if}}
     {{#each axis }}
       {{dir}}axis{{#if n}}{{n}}{{/if}}: {
         {{#if title}} title: "{{title}}", {{/if}}
         {{#if side}} side: "{{side}}", {{/if}}
+        {{#if type}} type: "{{type}}", {{/if}}
         {{#if overlaying}} overlaying: "{{overlaying}}", {{/if}}
         {{#if showgrid}} showgrid: {{showgrid}}, {{/if}}
       },
