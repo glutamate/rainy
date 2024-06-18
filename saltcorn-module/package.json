@@ -1,6 +1,6 @@
 {
   "name": "@saltcorn/rainy",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Rainy dashboards for Saltcorn",
   "main": "index.js",
   "dependencies": {
