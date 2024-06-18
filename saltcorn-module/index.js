@@ -255,6 +255,27 @@ const save_persist = async (
   return { json: { success: "ok" } };
 };
 
+const delete_persist = async (
+  table_id,
+  viewname,
+  {
+    persistence_table,
+    inputs_field,
+    outputs_field,
+    name_field,
+    field_values_formula,
+  },
+  body,
+  { req }
+) => {
+  if (persistence_table) {
+    const table = Table.findOne(persistence_table);
+
+    await table.deleteRows({ id: body.id });
+  } else throw new Error("Persistence not configured");
+  return { json: { success: "ok" } };
+};
+
 const headers = [
   {
     script: `/plugins/public/rainy@${
@@ -275,7 +296,7 @@ module.exports = {
       get_state_fields,
       configuration_workflow,
       run,
-      routes: { update, save_persist },
+      routes: { update, save_persist, delete_persist },
     },
   ],
 };
