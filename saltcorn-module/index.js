@@ -245,14 +245,14 @@ const save_persist = async (
     }
     const table = Table.findOne(persistence_table);
     const row = {};
-    await table.insertRow({
+    const id = await table.insertRow({
       ...extraVals,
       [inputs_field]: body.inputs,
       [outputs_field]: body.outputs,
       [name_field]: body.name,
     });
+    return { json: { success: "ok", id } };
   } else throw new Error("Persistence not configured");
-  return { json: { success: "ok" } };
 };
 
 const delete_persist = async (

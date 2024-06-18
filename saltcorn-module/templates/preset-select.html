@@ -16,8 +16,8 @@
   </ul>
 </div>
 <script>
-  const ul = document.querySelector("#preset-select ul");
-  (rainyPersistData || []).forEach((row) => {
+  function addRainyPersistItem(row) {
+    const ul = document.querySelector("#preset-select ul");
     const li = document.createElement("li");
     const div = document.createElement("div");
     const a = document.createElement("a");
@@ -50,18 +50,24 @@
     div.appendChild(i);
     li.appendChild(div);
     ul.appendChild(li);
-  });
+  }
+  (rainyPersistData || []).forEach(addRainyPersistItem);
   function newRainyPersist() {
     const name = window.prompt("Name of these inputs");
     if (!name) return;
     const viewname = document
       .querySelectorAll("div.rainy-dashboard")[0]
       .getAttribute("data-viewname");
-    view_post(viewname, "save_persist", {
-      name,
-      inputs: inputStore,
-      outputs: rainyOutputs,
-    });
+    view_post(
+      viewname,
+      "save_persist",
+      {
+        name,
+        inputs: inputStore,
+        outputs: rainyOutputs,
+      },
+      (data) => addRainyPersistItem({ name, id: data.id })
+    );
   }
   function setRainyPersist(id) {
     const row = rainyPersistData.find((r) => r.id == id);
