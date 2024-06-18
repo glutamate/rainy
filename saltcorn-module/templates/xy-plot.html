@@ -22,6 +22,7 @@
     {{/each}}
   ], {
     {{#if title}} title: "{{title}}", {{/if}}
+    {{#if showlegend}} showlegend: {{showlegend}}, {{/if}}
     {{#each axis }}
       {{dir}}axis{{#if n}}{{n}}{{/if}}: {
         {{#if title}} title: "{{title}}", {{/if}}
