@@ -3,6 +3,10 @@ const fsp = require("fs").promises;
 const path = require("path");
 const cheerio = require("cheerio");
 
+Handlebars.registerHelper("json", function (context) {
+  return JSON.stringify(context);
+});
+
 module.exports = async (fragment) => {
   const templates = {};
   for (const fp of await fsp.readdir(path.join(__dirname, "templates"))) {
