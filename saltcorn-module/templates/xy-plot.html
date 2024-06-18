@@ -10,6 +10,10 @@
       type: _tr.type || undefined,
       name: _tr.name || undefined,
       yaxis: _tr.yaxis || undefined,
+      line: {
+        color: _tr.color || undefined,
+        width: _tr.width || undefined,
+      }
      })),
      ..._traces.map(_tr=>(
       rainyEvalExpr(_tr.ys).map(y=>({
@@ -18,6 +22,10 @@
         type: _tr.type || undefined,
         name: _tr.name || undefined,
         yaxis: _tr.yaxis || undefined,
+        line: {
+          color: _tr.color || undefined,
+          width: _tr.width || undefined,
+        }
        }))
      )).flat(),
   ], {
