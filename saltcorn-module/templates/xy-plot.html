@@ -1,25 +1,25 @@
 <div id="{{ id }}"></div>
 <script type="text/rainy-loop-js">
+  const _trace = {{#if trace}} {{{json trace}}} {{else}} [] {{/if}};
+  const _traces = {{#if traces}} {{{json traces}}} {{else}} [] {{/if}};
+  const _flatten = xss => xss.map()
   Plotly.newPlot("{{ id }}", [
-    {{#each trace }}
-     {
-       x: rainyEvalExpr("{{x}}"),
-       y: rainyEvalExpr("{{y}}"),
-       {{#if type}} type: "{{type}}", {{/if}}
-       {{#if name}} name: "{{name}}", {{/if}}
-       {{#if yaxis}} yaxis: "{{yaxis}}", {{/if}}
-     },
-    {{/each}}
-    {{#each traces }}
-     ...rainyEvalExpr("{{ys}}").map(y=>({
-       x: rainyEvalExpr("{{x}}"),
-       y,
-       {{#if type}} type: "{{type}}", {{/if}}
-       {{#if name}} name: "{{name}}", {{/if}}
-       {{#if yaxis}} yaxis: "{{yaxis}}", {{/if}}
-      }))
-
-    {{/each}}
+     ..._trace.map(_tr=>({
+      x: rainyEvalExpr(_tr.x),
+      y: rainyEvalExpr(_tr.y),
+      type: _tr.type || undefined,
+      name: _tr.name || undefined,
+      yaxis: _tr.yaxis || undefined,
+     })),
+     ..._traces.map(_tr=>(
+      rainyEvalExpr(_tr.ys).map(y=>({
+        x: rainyEvalExpr(_tr.x),
+        y,
+        type: _tr.type || undefined,
+        name: _tr.name || undefined,
+        yaxis: _tr.yaxis || undefined,
+       }))
+     )).flat(),
   ], {
     {{#if title}} title: "{{title}}", {{/if}}
     {{#if showlegend}} showlegend: {{showlegend}}, {{/if}}
