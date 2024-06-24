@@ -27,7 +27,8 @@ module.exports = async (fragment) => {
         const $this = $(this);
         const context = {};
         for (const { name, value } of this.attributes) {
-          context[name] = value;
+          if (value === "") context[name] = true;
+          else context[name] = value;
         }
         context.body = $this.html();
         for (const child of this.children) {
