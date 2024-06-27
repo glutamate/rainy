@@ -56,33 +56,39 @@ async function fetchRender() {
   view_post(viewname, "update", inputStore, (data) => {
     globalRainyContext = { ...inputStore, ...data };
     rainyOutputs = data;
-    //render
-    document
-      .querySelectorAll('script[type="text/rainy-loop-js"]')
-      .forEach((el, i) => {
-        const f = new Function(
-          Object.keys(globalRainyContext).join(","),
-          el.textContent
-        );
-        f(...Object.values(globalRainyContext));
+    try {
+      //render
+      document
+        .querySelectorAll('script[type="text/rainy-loop-js"]')
+        .forEach((el, i) => {
+          const f = new Function(
+            Object.keys(globalRainyContext).join(","),
+            el.textContent
+          );
+          f(...Object.values(globalRainyContext));
+        });
+      document.querySelectorAll("[data-show-if]").forEach((el, i) => {
+        const expr = el.getAttribute("data-show-if");
+        const show_it = rainyEvalExpr(expr);
+        if (show_it) el.style.display = "";
+        else el.style.display = "none";
       });
-    document.querySelectorAll("[data-show-if]").forEach((el, i) => {
-      const expr = el.getAttribute("data-show-if");
-      const show_it = rainyEvalExpr(expr);
-      if (show_it) el.style.display = "";
-      else el.style.display = "none";
-    });
 
-    document.querySelectorAll("[data-eval-expr]").forEach((el, i) => {
-      const expr = el.getAttribute("data-eval-expr");
+      document.querySelectorAll("[data-eval-expr]").forEach((el, i) => {
+        const expr = el.getAttribute("data-eval-expr");
 
-      el.textContent = rainyEvalExpr(expr);
-    });
-    document.querySelectorAll(".rainy-loading-indicator").forEach((el, i) => {
-      el.style.display = "none";
-    });
-    document.querySelectorAll(".rainy-hide-loading").forEach((el, i) => {
-      el.style.display = "";
-    });
+        el.textContent = rainyEvalExpr(expr);
+      });
+    } catch (e) {
+      notifyAlert({ type: "danger", text: e.message });
+      console.error(e);
+    } finally {
+      document.querySelectorAll(".rainy-loading-indicator").forEach((el, i) => {
+        el.style.display = "none";
+      });
+      document.querySelectorAll(".rainy-hide-loading").forEach((el, i) => {
+        el.style.display = "";
+      });
+    }
   });
 }
