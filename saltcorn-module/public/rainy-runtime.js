@@ -28,7 +28,11 @@ const rainyEvalExpr = (expr) => {
 document.querySelectorAll(".rainy-loading-indicator").forEach((el, i) => {
   el.style.display = "none";
 });
+
+let globalRainyPause = false;
+
 async function fetchRender() {
+  if (globalRainyPause) return;
   const viewname = document
     .querySelectorAll("div.rainy-dashboard")[0]
     .getAttribute("data-viewname");

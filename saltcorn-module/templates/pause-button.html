@@ -1,0 +1,20 @@
+<button id="rainy-pause-button" type="button" title="Pause updates from changes in inputs"
+  class="btn {{#if btn-class}} {{ btn-class }} {{else}} btn-secondary {{/if}}" onclick="toggleRainyPause()">
+  <i class="fas fa-pause"></i>
+</button>
+<script>
+  function toggleRainyPause() {
+    globalRainyPause = !globalRainyPause;
+    const $e = document.getElementById("rainy-pause-button")
+    const i = document.createElement("i");
+
+    if (globalRainyPause)
+      i.setAttribute("class", "fas fa-play");
+    else
+      i.setAttribute("class", "fas fa-pause");
+
+    $e.replaceChildren(i)
+    if (!globalRainyPause) fetchRender()
+
+  }
+</script>
