@@ -1,4 +1,4 @@
-<ul class="nav nav-tabs" role="tablist">
+<ul class="nav nav-{{#if pills}}pills{{else}}tabs{{/if}}" role="tablist">
   {{#each tab}}
   <li class="nav-item" role="presentation">
     <button class="nav-link {{#if @first}}active{{/if}}" id="{{id}}-tab" data-bs-toggle="tab" data-bs-target="#{{id}}"
