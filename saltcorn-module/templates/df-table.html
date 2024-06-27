@@ -15,13 +15,15 @@
   Object.keys(ddf).forEach(k=>{
     const col = _columns[k]
     const alignS = col?.align ? ` style="text-align: ${col.align}"`: ''
-    $(`#{{id}} thead tr`).append(`<th${alignS}>${k}</th>`)
+    $(`#{{id}} thead tr`).append(`<th${alignS}>${col?.label || k}</th>`)
     len = Math.max(len, ddf[k].length)
   })
   for (let ix = 0; ix < len; ix++) {
     const tr = Object.keys(ddf).map(k=>{
       const col = _columns[k]
-      const val = ddf[k][ix]
+      let val = ddf[k][ix]
+      if(col?.['divide-by'])
+        val = val/(+col['divide-by']);
       const alignS = col?.align ? ` style="text-align: ${col.align}"`: ''
       if(col?.currency && typeof val ==="number") 
         return `<td${alignS}>${val.toLocaleString(col?.locale || "en", {
@@ -29,7 +31,7 @@
           currency:col.currency,
           maximumFractionDigits: col.round ? 0 : 2
         })}</td>`
-      if(col?.thousands && typeof val ==="number")
+      if(col?.['thousands-sep'] && typeof val ==="number")
         return `<td${alignS}>${val.toLocaleString(col?.locale || "en", {
           maximumFractionDigits: col.round ? 0 : 2
         })}</td>`
