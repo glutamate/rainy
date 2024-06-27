@@ -39,6 +39,7 @@ module.exports = async (fragment) => {
               if (value === "") pushval[name] = true;
               else pushval[name] = value;
             }
+            pushval.body = $(child).html();
             context[child.name].push(pushval);
           }
         }
