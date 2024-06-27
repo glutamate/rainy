@@ -36,7 +36,8 @@ module.exports = async (fragment) => {
             if (!context[child.name]) context[child.name] = [];
             const pushval = {};
             for (const { name, value } of child.attributes) {
-              pushval[name] = value;
+              if (value === "") pushval[name] = true;
+              else pushval[name] = value;
             }
             context[child.name].push(pushval);
           }
