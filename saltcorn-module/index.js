@@ -215,14 +215,24 @@ const update = async (
   const name = path.basename(pyfile.location);
 
   //let options = { stdio: "pipe", cwd: __dirname };
-  const { stdout, stderr } = await runCmd(
-    `${python_bin || "python3"} ${name}`,
-    {
+  let cmd = `${python_bin || "python3"} ${name}`;
+  try {
+    const { stdout, stderr } = await runCmd(cmd, {
       cwd,
       stdin: JSON.stringify(body),
-    }
-  );
-  return { json: JSON.parse(stdout) };
+    });
+    return { json: JSON.parse(stdout) };
+  } catch (e) {
+    console.error("runCmd error ", e);
+    return {
+      json: {
+        error: (e.message || "").replace(
+          `Command failed: /Users/tomn/tmp/fpenv/bin/python3 pyrainy.py`,
+          ""
+        ),
+      },
+    };
+  }
 };
 
 const save_persist = async (

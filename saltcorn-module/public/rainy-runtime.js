@@ -58,6 +58,11 @@ async function fetchRender() {
     body: JSON.stringify(inputStore),
   });
   const data = await rawData.json();
+  if (data.error && Object.keys(data).length === 1) {
+    notifyAlert({ type: "danger", text: `<pre>${data.error}</pre>` });
+    indicateLoading(false);
+    return;
+  }
   globalRainyContext = { ...inputStore, ...data };
   rainyOutputs = data;
   try {
