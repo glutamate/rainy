@@ -46,49 +46,56 @@ async function fetchRender() {
     .forEach((el, i) => {
       inputStore[el.name] = el.options[el.selectedIndex].value;
     });
+  indicateLoading(true);
+  console.log("inputs", inputStore);
+  const rawData = await fetch(`/view/${viewname}/update`, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      "CSRF-Token": window._sc_globalCsrf,
+    },
+    body: JSON.stringify(inputStore),
+  });
+  const data = await rawData.json();
+  globalRainyContext = { ...inputStore, ...data };
+  rainyOutputs = data;
+  try {
+    //render
+    document
+      .querySelectorAll('script[type="text/rainy-loop-js"]')
+      .forEach((el, i) => {
+        const f = new Function(
+          Object.keys(globalRainyContext).join(","),
+          el.textContent
+        );
+        f(...Object.values(globalRainyContext));
+      });
+    document.querySelectorAll("[data-show-if]").forEach((el, i) => {
+      const expr = el.getAttribute("data-show-if");
+      const show_it = rainyEvalExpr(expr);
+      if (show_it) el.style.display = "";
+      else el.style.display = "none";
+    });
+
+    document.querySelectorAll("[data-eval-expr]").forEach((el, i) => {
+      const expr = el.getAttribute("data-eval-expr");
+
+      el.textContent = rainyEvalExpr(expr);
+    });
+  } catch (e) {
+    notifyAlert({ type: "danger", text: e.message });
+    console.error(e);
+  } finally {
+    indicateLoading(false);
+  }
+}
+
+function indicateLoading(isLoading) {
   document.querySelectorAll(".rainy-loading-indicator").forEach((el, i) => {
-    el.style.display = "";
+    el.style.display = isLoading ? "" : "none";
   });
   document.querySelectorAll(".rainy-hide-loading").forEach((el, i) => {
-    el.style.display = "none";
-  });
-  console.log("inputs", inputStore);
-  view_post(viewname, "update", inputStore, (data) => {
-    globalRainyContext = { ...inputStore, ...data };
-    rainyOutputs = data;
-    try {
-      //render
-      document
-        .querySelectorAll('script[type="text/rainy-loop-js"]')
-        .forEach((el, i) => {
-          const f = new Function(
-            Object.keys(globalRainyContext).join(","),
-            el.textContent
-          );
-          f(...Object.values(globalRainyContext));
-        });
-      document.querySelectorAll("[data-show-if]").forEach((el, i) => {
-        const expr = el.getAttribute("data-show-if");
-        const show_it = rainyEvalExpr(expr);
-        if (show_it) el.style.display = "";
-        else el.style.display = "none";
-      });
-
-      document.querySelectorAll("[data-eval-expr]").forEach((el, i) => {
-        const expr = el.getAttribute("data-eval-expr");
-
-        el.textContent = rainyEvalExpr(expr);
-      });
-    } catch (e) {
-      notifyAlert({ type: "danger", text: e.message });
-      console.error(e);
-    } finally {
-      document.querySelectorAll(".rainy-loading-indicator").forEach((el, i) => {
-        el.style.display = "none";
-      });
-      document.querySelectorAll(".rainy-hide-loading").forEach((el, i) => {
-        el.style.display = "";
-      });
-    }
+    el.style.display = isLoading ? "none" : "";
   });
 }
