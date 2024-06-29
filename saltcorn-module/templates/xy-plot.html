@@ -32,6 +32,17 @@
   ], {
     {{#if title}} title: "{{title}}", {{/if}}
     {{#if showlegend}} showlegend: {{showlegend}}, {{/if}}
+    {{#if height}} height: {{height}}, {{/if}}
+    {{#if width}} width: {{height}}, {{/if}}
+    {{#each margin}}
+    margin: {
+      {{#if pad}} pad: {{pad}}, {{/if}}
+      {{#if l}} l: {{l}}, {{/if}}
+      {{#if b}} b: {{b}}, {{/if}}
+      {{#if r}} r: {{r}}, {{/if}}
+      {{#if t}} t: {{t}}, {{/if}}
+    },
+    {{/each}}
     {{#each axis }}
       {{dir}}axis{{#if n}}{{n}}{{/if}}: {
         {{#if title}} title: "{{title}}", {{/if}}
@@ -40,6 +51,8 @@
         {{#if overlaying}} overlaying: "{{overlaying}}", {{/if}}
         {{#if showgrid}} showgrid: {{showgrid}}, {{/if}}
       },
-    {{/each}}
+  }, {
+    {{#if responsive}} responsive: true, {{/if}}
+    {{#if no-mode-bar}} displayModeBar: false, {{/if}}
   });
 </script>
