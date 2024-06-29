@@ -7,6 +7,7 @@
      ..._trace.map(_tr=>({
       x: rainyEvalExpr(_tr.x),
       y: rainyEvalExpr(_tr.y),
+      ...(_tr.z ? {z: rainyEvalExpr(_tr.z)} : {}),
       type: _tr.type || undefined,
       name: _tr.name || undefined,
       yaxis: _tr.yaxis || undefined,
