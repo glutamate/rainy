@@ -1,15 +1,31 @@
-<ul class="nav nav-{{#if pills}}pills{{else}}tabs{{/if}}" role="tablist">
-  {{#each tab}}
-  <li class="nav-item" role="presentation">
-    <button class="nav-link {{#if @first}}active{{/if}}" id="{{id}}-tab" data-bs-toggle="tab" data-bs-target="#{{id}}"
-      type="button" role="tab" aria-controls="home" aria-selected="true">{{label}}</button>
-  </li>
-  {{/each}}
-</ul>
-<div class="tab-content" id="myTabContent">
-  {{#each tab}}
-  <div class="tab-pane fade {{#if @first}} show active {{/if}}" id="{{id}}" role="tabpanel"
-    aria-labelledby="{{id}}-tab">{{{body}}}</div>
-  {{/each}}
+{{#if card}}
+<div class="card">
+  <div class="card-header">
+    {{/if}}
 
+    <ul class="nav nav-{{#if pills}}pills{{else}}tabs{{/if}} {{#if card}}card-header-tabs{{/if}}" role="tablist">
+      {{#each tab}}
+      <li class="nav-item" role="presentation">
+        <button class="nav-link {{#if @first}}active{{/if}}" id="{{id}}-tab" data-bs-toggle="tab"
+          data-bs-target="#{{id}}" type="button" role="tab" aria-controls="home" aria-selected="true">{{label}}</button>
+      </li>
+      {{/each}}
+    </ul>
+
+    {{#if card}}
+  </div>
+  <div class="card-body">
+    {{/if}}
+
+    <div class="tab-content" id="myTabContent">
+      {{#each tab}}
+      <div class="tab-pane fade {{#if @first}} show active {{/if}}" id="{{id}}" role="tabpanel"
+        aria-labelledby="{{id}}-tab">{{{body}}}</div>
+      {{/each}}
+
+    </div>
+
+    {{#if card}}
+  </div>
 </div>
+{{/if}}
