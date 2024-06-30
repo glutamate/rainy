@@ -7,7 +7,8 @@
       {{#each tab}}
       <li class="nav-item" role="presentation">
         <button class="nav-link {{#if @first}}active{{/if}}" id="{{id}}-tab" data-bs-toggle="tab"
-          data-bs-target="#{{id}}" type="button" role="tab" aria-controls="home" aria-selected="true">{{label}}</button>
+          data-bs-target="#{{id}}" onclick="rainyRerenderChildren('#{{id}}')" type="button" role="tab"
+          aria-controls="home" aria-selected="true">{{label}}</button>
       </li>
       {{/each}}
     </ul>

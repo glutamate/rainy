@@ -1,5 +1,5 @@
 /* eslint-env browser */
-/* globals notifyAlert, $, view_post */
+/* globals notifyAlert, $, view_post, Plotly */
 const inputStore = {};
 let rainyOutputs;
 
@@ -103,4 +103,10 @@ function indicateLoading(isLoading) {
   document.querySelectorAll(".rainy-hide-loading").forEach((el, i) => {
     el.style.display = isLoading ? "none" : "";
   });
+}
+
+function rainyRerenderChildren(target) {
+  if (!target) return;
+  const plots = document.querySelectorAll(`${target} .rainy-plotly`);
+  for (const plot of plots) Plotly.Plots.resize(`${plot.getAttribute("id")}`);
 }
