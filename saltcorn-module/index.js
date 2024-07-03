@@ -226,10 +226,7 @@ const update = async (
     console.error("runCmd error ", e);
     return {
       json: {
-        error: (e.message || "").replace(
-          `Command failed: /Users/tomn/tmp/fpenv/bin/python3 pyrainy.py`,
-          ""
-        ),
+        error: (e.message || "").replace(`Command failed: ${cmd}`, ""),
       },
     };
   }
