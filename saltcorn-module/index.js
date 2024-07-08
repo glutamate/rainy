@@ -221,6 +221,7 @@ const update = async (
       cwd,
       stdin: JSON.stringify(body),
     });
+    console.log(stderr);
     return { json: JSON.parse(stdout) };
   } catch (e) {
     console.error("runCmd error ", e);
