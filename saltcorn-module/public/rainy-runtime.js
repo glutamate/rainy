@@ -39,7 +39,12 @@ async function fetchRender() {
   document
     .querySelectorAll("div.rainy-dashboard input[name]")
     .forEach((el, i) => {
-      inputStore[el.name] = el.type === "number" ? +el.value : el.value;
+      inputStore[el.name] =
+        el.type === "checkbox"
+          ? el.checked
+          : el.type === "number"
+          ? +el.value
+          : el.value;
     });
   document
     .querySelectorAll("div.rainy-dashboard select[name]")
