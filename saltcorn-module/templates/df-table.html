@@ -37,6 +37,8 @@
         })}</td>`
       if(col?.round && typeof val ==="number")
         return `<td${alignS}>${Math.round(val)}</td>`
+      if(col?.roundpt && typeof val ==="number")
+        return `<td${alignS}>${val.toFixed(+col.roundpt)}</td>`
       return `<td${alignS}>${val}</td>`
     }).join("")
     $(`#{{id}} tbody`).append(`<tr>${tr}</tr>`)
